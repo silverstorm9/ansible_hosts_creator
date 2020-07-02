@@ -1,0 +1,1 @@
+Install python 3.8.3 : https://linuxize.com/post/how-to-install-python-3-8-on-debian-10/

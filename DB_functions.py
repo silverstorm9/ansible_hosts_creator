@@ -45,4 +45,10 @@ def update(table_name, machines, cursor):
     Parameters ip, hostname and os are strings
     """
     query = """INSERT OR REPLACE INTO {} (ip,hostname,os) VALUES (?,?,?)""".format(table_name)
-    cursor.executemany(query, machines)
+    #cursor.executemany(query, machines)
+    for machine in machines:
+        if machine[2] == 'no_os':
+            query = """UPDATE {} SET hostname = \'{}\' WHERE ip==\'{}\'""".format(table_name, machine[1], machine[0])
+            cursor.execute(query)
+        else:
+            cursor.execute(query, machine)
