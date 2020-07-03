@@ -28,6 +28,10 @@ def getOs(scan_report):
     return os
 
 def extractNmapInfo(verbose=True, path=''):
+    # Check if the file is a XML file 
+    if path[-4::] != '.xml':
+        return []
+
     # Open and read nmap.xml
     try:
         nmap_xml = open(path, 'r')
