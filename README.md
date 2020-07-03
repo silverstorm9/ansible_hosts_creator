@@ -12,7 +12,7 @@ ansible_hosts_creator/
 ├── analyse_nmap.py
 ├── DB.db
 ├── DB_functions.py
-└── README.txt
+└── README.md
 ```
 
 
@@ -20,7 +20,7 @@ ansible_hosts_creator/
 - **analyse_nmap.py** : module Python permettant d'extraire les informations d'un scan nmap enregistrées dans un fichier XML
 - **DB.db** : base de données comportant les tables correspondant à des wlan.
 - **DB_functions.py** : module Python permettant d'intéragir avec la base de donnée
-- **README.txt** : comporte le guide d'installation et de description
+- **README.md** : comporte le guide d'installation et de description
 
 **Prérequis**
 
