@@ -244,7 +244,7 @@ def show_table(table_name):
     
 
 if __name__ == "__main__":
-    os.system('cd {}'.format(os.path.abspath(os.path.dirname(__file__)))) # Redirect the path into ..../ansible_hosts_creator
+    os.chdir(os.path.abspath(os.path.dirname(__file__))) # Redirect the path into ..../ansible_hosts_creator
     display_menu()
     while True:
         choice = '-1'
