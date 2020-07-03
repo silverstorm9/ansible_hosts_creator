@@ -1,3 +1,4 @@
+import os
 import sqlite3
 import analyse_nmap
 import DB_functions
@@ -243,6 +244,7 @@ def show_table(table_name):
     
 
 if __name__ == "__main__":
+    os.system('cd {}'.format(os.path.abspath(__file__))) # Redirect the path into ..../ansible_hosts/creator
     display_menu()
     while True:
         choice = '-1'
