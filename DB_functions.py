@@ -44,14 +44,17 @@ def update(table_name, machines, cursor):
                            ]
     Parameters ip, hostname and os are strings
     """
-    query = """INSERT OR REPLACE INTO {} (ip,hostname,os) VALUES (?,?,?)""".format(table_name)
+    #query = """INSERT OR REPLACE INTO {} (ip,hostname,os) VALUES (?,?,?)""".format(table_name)
     #cursor.executemany(query, machines)
     for machine in machines:
-        cursor.execute("""SELECT * FROM {} WHERE ip==\'{}\'""".format(table_name, machine[0]))
-        os = ''
-        for row in cursor:
-            if row:
-                os = row[2]
-        if os and os != 'no_os' and machine[2] == 'no_os':
-            query = """UPDATE {} SET hostname = \'{}\' WHERE ip==\'{}\'""".format(table_name, machine[1], machine[0])
-        cursor.execute(query, machine)
+        try:
+            actual_os = [row[0] for row in cursor.execute("""SELECT os FROM {} WHERE ip=\'{}\'""".format(table_name, machine[0]))][0] # ne pas remettre en cause l'existance de cette ligne / don't question the existance of this line
+        except:
+            actual_os = ''
+        new_os = machine[2]
+        if actual_os and actual_os != 'no_os' and new_os == 'no_os':
+            query = """UPDATE {} SET hostname =\'{}\' WHERE ip==\'{}\'""".format(table_name, machine[1], machine[0])
+            cursor.execute(query)
+        else:
+            query = """INSERT OR REPLACE INTO {} (ip,hostname,os) VALUES (?,?,?)""".format(table_name)
+            cursor.execute(query, machine)
