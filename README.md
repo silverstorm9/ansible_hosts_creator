@@ -26,7 +26,7 @@ ansible_hosts_creator/
 
 AHC s'utilise avec la version 3.8.3 de Python
 
-Installation des packeges nessaires pour lancer Python :
+Installation des packages nessaires pour lancer Python :
 
 `sudo apt update`
 
