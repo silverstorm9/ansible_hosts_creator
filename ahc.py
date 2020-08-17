@@ -1,5 +1,4 @@
 import os
-import sqlite3
 import analyse_nmap
 import DB_functions
 
@@ -57,23 +56,7 @@ def edit_hosts(hosts_path):
             group_name = input('Enter group name >')
             buffer += '\n\n[{}]'.format(group_name)
 
-        # Connect to the DB
-        conn = sqlite3.connect('DB.db')
-        cursor = conn.cursor()
-
-        # Ask the user to pull ip from database by inserting SQL query
-        query = 'SELECT * FROM ' + input('(sql)>SELECT ip,hostname,os FROM ')
-
-        try:
-            cursor.execute(query)
-        except Exception as e:
-            print('Error:', e)
-
-        for row in cursor:
-            buffer += '\n{} # {} {}'.format(row[0], row[1], row[2])
-
-        # Close the connection with the DB
-        conn.close()
+        buffer += DB_functions.select_all_from()
 
         # Ask to add the buffer to the hosts file
         print(buffer)
@@ -104,13 +87,9 @@ def edit_table(table_name, nmap_path):
         print('{}: select a existing path'.format(nmap_path))
         return
 
-    # Connect to the DB
-    conn = sqlite3.connect('DB.db')
-    cursor = conn.cursor()
-
     # Push data to the DB
     try:
-        DB_functions.update(table_name, extracted_info, cursor=cursor)
+        DB_functions.update(table_name, extracted_info)
     except Exception as e:
         print(e)
         if str(e) == 'no such table: {}'.format(str(e).split()[-1]):
@@ -118,16 +97,10 @@ def edit_table(table_name, nmap_path):
             while choice not in ['Y','n']:
                 choice = input('Would you want to create the table {} ? [Y/n]'.format(str(e).split()[-1]))
             if choice == 'Y':
-                DB_functions.create_table(table_name=str(e).split()[-1], cursor=cursor)
-                DB_functions.update(table_name, extracted_info, cursor=cursor)
+                DB_functions.create_table(table_name=str(e).split()[-1])
+                DB_functions.update(table_name, extracted_info)
             elif choice == 'n':
                 pass
-
-    # Save (commit) the changes
-    conn.commit()
-
-    # Close the connection with the DB
-    conn.close()
 
 def generate_hosts(hosts_path):
     # Comment lines at the top of the hosts file
@@ -150,44 +123,6 @@ def generate_hosts(hosts_path):
             elif choice == 'n':
                 pass
 
-def generate_table(table_name):
-    # Connect to the DB
-    conn = sqlite3.connect('DB.db')
-    cursor = conn.cursor()
-
-    # Try to create a table
-    try:
-        DB_functions.create_table(table_name, cursor)
-    except Exception as e:
-        print(e)
-
-    # Save (commit) the changes
-    conn.commit()
-
-    # Close the connection with the DB
-    conn.close()
-
-def insert_sql_query():
-    # Connect to the DB
-    conn = sqlite3.connect('DB.db')
-    cursor = conn.cursor()
-
-    query = input('(sql)>')
-
-    try:
-        cursor.execute(query)
-    except Exception as e:
-        print('Error:', e)
-
-    for row in cursor:
-        print(row)
-
-    # Save (commit) the changes
-    conn.commit()
-
-    # Close the connection with the DB
-    conn.close()
-
 def show_hosts(hosts_path):
     # Try to read a file if it exists
     try:
@@ -204,43 +139,6 @@ def show_hosts(hosts_path):
                 generate_hosts(hosts_path) # create a file if it doesn't exist
             elif choice == 'n':
                 pass
-
-def show_table(table_name):
-    # Connect to the DB
-    conn = sqlite3.connect('DB.db')
-    cursor = conn.cursor()
-
-    if table_name in ['*','all']:
-        query = 'SELECT name FROM sqlite_master WHERE type = "table"'
-
-        try:
-            cursor.execute(query)
-            tables = [elmt[0] for elmt in list(cursor)]
-
-            for table_name in tables:
-                query = 'SELECT * FROM {}'.format(table_name)
-
-                cursor.execute(query)
-                print('\n{}'.format(table_name))
-                for row in cursor:
-                    print(' '.join([elmt for elmt in list(row)]))
-
-        except Exception as e:
-            print('Error:', e)
-
-    else:
-        query = 'SELECT * FROM {}'.format(table_name)
-
-        try:
-            cursor.execute(query)
-            print('\n{}'.format(table_name))
-            for row in cursor:
-                print(' '.join([elmt for elmt in list(row)]))
-        except Exception as e:
-            print('Error:', e)
-
-    # Close the connection with the DB
-    conn.close()
     
 
 if __name__ == "__main__":
@@ -266,7 +164,7 @@ if __name__ == "__main__":
             if len(choice.split()) == 3:
                 # create table [table_name]
                 if choice.split()[1] == '-t':
-                    generate_table(table_name=choice.split()[2])
+                    DB_functions.create_table(table_name=choice.split()[2])
                 # create hosts [hosts_path]
                 elif choice.split()[1] == '-h':
                     generate_hosts(hosts_path=choice.split()[2])
@@ -298,7 +196,7 @@ if __name__ == "__main__":
             if len(choice.split()) == 3:
                 # show table [table_name]
                 if choice.split()[1] == '-t':
-                    show_table(table_name=choice.split()[2])
+                    DB_functions.show_table(table_name=choice.split()[2])
                 # show hosts [hosts_path]
                 elif choice.split()[1] == '-h':
                     show_hosts(hosts_path=choice.split()[2])
@@ -309,4 +207,4 @@ if __name__ == "__main__":
 
         # sql
         elif choice == 'sql':
-            insert_sql_query()
+            DB_functions.insert_sql_query()
