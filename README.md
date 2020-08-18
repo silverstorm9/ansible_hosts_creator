@@ -95,10 +95,10 @@ Exemples de commandes SQL :
 
 ```
 SELECT * FROM wlan10 WHERE os!='Windows'
-INSERT INTO wlan10 VALUES ('192.168.10.1','machine1','Linux')
+INSERT INTO wlan10 VALUES ('192.168.10.1','machine1','Linux','CentOS7')
 DELETE FROM wlan10 WHERE ip=='192.168.10.1'
-UPDATE wlan10 SET hostname = 'machine1', os = 'Windows' WHERE ip=='192.168.10.1'
-INSERT OR REPLACE INTO wlan10 (ip,hostname,os) VALUES ('192.168.10.1','machine1','no_os')
+UPDATE wlan10 SET hostname = 'machine1', os = 'Linux', dist='Debian10' WHERE ip=='192.168.10.1'
+INSERT OR REPLACE INTO wlan10 (ip,hostname,os,dist) VALUES ('192.168.10.1','machine1','no_os','no_dist')
 ```
 
 Voir aussi : https://sql.sh/cours
