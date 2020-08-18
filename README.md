@@ -11,6 +11,7 @@ ansible_hosts_creator/
 ├── ahc.py
 ├── analyse_nmap.py
 ├── DB.db
+├── DB.txt
 ├── DB_functions.py
 └── README.md
 ```
@@ -19,6 +20,7 @@ ansible_hosts_creator/
 - **ahc.py** : programme principale à éxécuter
 - **analyse_nmap.py** : module Python permettant d'extraire les informations d'un scan nmap enregistrées dans un fichier XML
 - **DB.db** : base de données comportant les tables correspondant à des wlan.
+- **DB.txt** : base de données en .txt comportant les informations de la bases de données .db permettant une modification plus commode pour l'utilisateur.
 - **DB_functions.py** : module Python permettant d'intéragir avec la base de donnée
 - **README.md** : comporte le guide d'installation et de description
 
@@ -75,6 +77,8 @@ edit [-t tableName xmlFile|-h hostsPath] : (-t) Extrait ip, hostname, os du du f
 show [-t tableName|-h hostsPath] : (-t) affiche le contenu d'une tbale, (* ou all affiche toutes les tables)
                                  : (-h) affiche le contenu du fichier hosts.txt
 sql : lance un shell pour entrer des requête SQL
+export : exporte la BDD de .db en .txt
+import : import la BDD de .txt en .db
 exit|quit : quitte le AHC
 ```
 
@@ -89,6 +93,9 @@ edit -h ./hosts.txt # Permet d'éditer le fichier hosts.txt
 
 show -t wlan10 # Afficher les éléments de la tables wlan10
 show -h ./hosts.txt # Affiche le contenu du fichier hosts.txt
+
+export
+import
 ```
 
 Exemples de commandes SQL :
