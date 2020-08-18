@@ -70,10 +70,11 @@ def extractNmapInfo(verbose=True, path=''):
         hostname = getHostname(scan_report)
         #os = getOs(scan_report)
         os = getOsv2(scan_report)
+        dist = 'no_dist'
 
         if verbose:
-            print(ip, hostname, os)
+            print(ip, hostname, os, dist)
 
-        extracted_info.append((ip, hostname, os, ))
+        extracted_info.append((ip, hostname, os, dist, ))
 
     return extracted_info

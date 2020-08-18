@@ -14,34 +14,47 @@ def display_menu():
     print('Enter help command to show all commands.\n')
 
 def display_help():
-    print('AHC (ANSIBLE HOSTS CREATOR) 1.0 powered by Python 3.8.3, 01/07/2020')
-    print('First, this tool is used to extract results of nmap contained in XML file and push them to the Database (DB.db).')
-    print('Secondly, it permit for user to select elements from the database to generate a hosts file containing IP addresses using by Ansible for tests.')
-    print('\nCOMMANDS:')
-    print('\nhelp : show help')
-    print('create [-t tableName|-h hostsPath] : create a table (-t) in the database')
-    print('                                     create a hosts file (-h) -> don\'t forget to set .txt extension')
-    print('edit [-t tableName xmlFile|-h hostsPath] : (-t) extract and push data from XML file and push them to the table in the database')
-    print('                                           (-h) edit hosts file (TXT) by inserting SQL query')
-    print('show [-t tableName|-h hostsPath] : (-t) display the content of the table (use * or all to show content for all tables in the database)')
-    print('                                 : (-h) display the content of the hosts file')
-    print('sql : permit for the user to insert SQL query')
-    print('exit|quit')
-    print('\nEXAMPLE OF COMMANDS USES:')
-    print('\ncreate -t wlan10')
-    print('create -h ./hosts.txt')
-    print('\nedit -t wlan10 ./nmap_wlan10.xml')
-    print('edit -h ./hosts.txt')
-    print('\nshow -t wlan10')
-    print('show -h ./hosts.txt')
-    print('\nEXAMPLE OF COMMON SQL QUERY USES :')
-    print('\nSELECT * FROM wlan10 WHERE os!=\'Windows\'')
-    print('INSERT INTO wlan10 VALUES (\'192.168.10.1\',\'machine1\',\'Linux\')')
-    print('DELETE FROM wlan10 WHERE ip==\'192.168.10.1\'')
-    print('UPDATE wlan10 SET hostname = \'machine1\', os = \'Windows\' WHERE ip==\'192.168.10.1\'')
-    print('INSERT OR REPLACE INTO wlan10 (ip,hostname,os) VALUES (\'192.168.10.1\',\'machine1\',\'no_os\')')
-    print('\nSee also : https://sql.sh/cours')
-    print('\n')
+    buffer = """
+AHC (ANSIBLE HOSTS CREATOR) 1.0 powered by Python 3.8.3, 01/07/2020
+First, this tool is used to extract results of nmap contained in XML file and push them to the Database (DB.db).
+Secondly, it permit for user to select elements from the database to generate a hosts file containing IP addresses using by Ansible for tests.
+
+COMMANDS:
+
+help : show help
+create [-t tableName|-h hostsPath] : create a table (-t) in the database
+                                     create a hosts file (-h) -> don't forget to set .txt extension
+edit [-t tableName xmlFile|-h hostsPath] : (-t) extract and push data from XML file and push them to the table in the database
+                                           (-h) edit hosts file (TXT) by inserting SQL query
+show [-t tableName|-h hostsPath] : (-t) display the content of the table (use * or all to show content for all tables in the database)
+                                 : (-h) display the content of the hosts file
+sql : permit for the user to insert SQL query
+exit|quit
+
+EXAMPLE OF COMMANDS USES:
+
+create -t wlan10
+create -h ./hosts.txt
+
+edit -t wlan10 ./nmap_wlan10.xml
+edit -h ./hosts.txt
+
+show -t wlan10
+show -h ./hosts.txt
+
+EXAMPLE OF COMMON SQL QUERY USES :
+
+SELECT * FROM wlan10 WHERE os!='Windows'
+INSERT INTO wlan10 VALUES ('192.168.10.1','machine1','Linux','CentOS7')
+DELETE FROM wlan10 WHERE ip=='192.168.10.1'
+UPDATE wlan10 SET hostname = 'machine1', os = 'Linux', dist='Debian10' WHERE ip=='192.168.10.1'
+INSERT OR REPLACE INTO wlan10 (ip,hostname,os,dist) VALUES ('192.168.10.1','machine1','no_os','no_dist')
+
+See also : https://sql.sh/cours
+
+
+    """
+    print(buffer)
 
 def edit_hosts(hosts_path):
     while True:

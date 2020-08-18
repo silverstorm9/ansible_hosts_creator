@@ -4,14 +4,14 @@ import sqlite3
 Databasse structures:
 
 Example : wlan10
-_____________________________________
-|       IP        | HOSTNAME  | OS  |
--------------------------------------
-|   192.168.10.1  | hostname1 | os1 |
-|   192.168.10.2  | hostname2 | os2 |
-|      ...        |     ...   | ... |
-|  192.168.10.xxx | hostnameN | osN |
--------------------------------------
+_______________________________________________
+|       IP        | HOSTNAME  | OS  |   DIST  |
+-----------------------------------------------
+|   192.168.10.1  | hostname1 | os1 | CentOS7 |
+|   192.168.10.2  | hostname2 | os2 | Debian9 |
+|      ...        |     ...   | ... |   ...   |
+|  192.168.10.xxx | hostnameN | osN |  DistN  |
+-----------------------------------------------
 """
 
 def create_table(table_name):
@@ -22,7 +22,7 @@ def create_table(table_name):
     conn = sqlite3.connect('DB.db')
     cursor = conn.cursor()
 
-    query = """CREATE TABLE IF NOT EXISTS {} (ip TEXT PRIMARY KEY NOT NULL, hostname TEXT, os TEXT)""".format(table_name)
+    query = """CREATE TABLE IF NOT EXISTS {} (ip TEXT PRIMARY KEY NOT NULL, hostname TEXT, os TEXT, dist TEXT)""".format(table_name)
 
     # Try to execute the query a table
     try:
@@ -38,10 +38,10 @@ def create_table(table_name):
 def insert(table_name, machines, cursor):
     """
     Insert a list of machines into a table
-    Ensure that machines = [(ip1, hostname1, os,),
-                            (ip2, hostname2, os,),
+    Ensure that machines = [(ip1, hostname1, os, dist),
+                            (ip2, hostname2, os, dist),
                             ...
-                            (ipN, hostnameN, os,),
+                            (ipN, hostnameN, os, dist),
                            ]
     Parameters ip, hostname and os are strings
     """
@@ -49,7 +49,7 @@ def insert(table_name, machines, cursor):
     conn = sqlite3.connect('DB.db')
     cursor = conn.cursor()
 
-    query = """INSERT INTO {} VALUES (?,?,?)""".format(table_name)
+    query = """INSERT INTO {} VALUES (?,?,?,?)""".format(table_name)
     cursor.executemany(query, machines)
 
     # Save (commit) the changes
@@ -60,7 +60,7 @@ def insert(table_name, machines, cursor):
 
 def insert_sql_query():
     """
-    Allow the user to insert SQL query 
+    Allow the user to insert SQL query
     """
     # Connect to the DB
     conn = sqlite3.connect('DB.db')
@@ -85,18 +85,18 @@ def insert_sql_query():
 def update(table_name, machines):
     """
     Insert a line into the DB if the line does not exist in here or update the line if it exists
-    Ensure that machines = [(ip1, hostname1, os,),
-                            (ip2, hostname2, os,),
+    Ensure that machines = [(ip1, hostname1, os, dist),
+                            (ip2, hostname2, os, dist),
                             ...
-                            (ipN, hostnameN, os,),
+                            (ipN, hostnameN, os, dist),
                            ]
-    Parameters ip, hostname and os are strings
+    Parameters ip, hostname, os and dist are strings
     """
     # Connect to the DB
     conn = sqlite3.connect('DB.db')
     cursor = conn.cursor()
 
-    #query = """INSERT OR REPLACE INTO {} (ip,hostname,os) VALUES (?,?,?)""".format(table_name)
+    #query = """INSERT OR REPLACE INTO {} (ip,hostname,os,dist) VALUES (?,?,?,?)""".format(table_name)
     #cursor.executemany(query, machines)
     for machine in machines:
         try:
@@ -105,10 +105,10 @@ def update(table_name, machines):
             actual_os = ''
         new_os = machine[2]
         if actual_os and actual_os != 'no_os' and new_os == 'no_os':
-            query = """UPDATE {} SET hostname =\'{}\' WHERE ip==\'{}\'""".format(table_name, machine[1], machine[0])
+            query = """UPDATE {} SET hostname =\'{}\', dist=\'{}\' WHERE ip==\'{}\'""".format(table_name, machine[1], machine[3], machine[0])
             cursor.execute(query)
         else:
-            query = """INSERT OR REPLACE INTO {} (ip,hostname,os) VALUES (?,?,?)""".format(table_name)
+            query = """INSERT OR REPLACE INTO {} (ip,hostname,os,dist) VALUES (?,?,?,?)""".format(table_name)
             cursor.execute(query, machine)
 
     # Save (commit) the changes
@@ -123,7 +123,7 @@ def select_all_from():
     cursor = conn.cursor()
 
     # Ask the user to pull ip from database by inserting SQL query
-    query = 'SELECT * FROM ' + input('(sql)>SELECT ip,hostname,os FROM ')
+    query = 'SELECT * FROM ' + input('(sql)>SELECT ip,hostname,os,dist FROM ')
 
     try:
         cursor.execute(query)
@@ -132,7 +132,7 @@ def select_all_from():
 
     buffer = str()
     for row in cursor:
-        buffer += '\n{} # {} {}'.format(row[0], row[1], row[2])
+        buffer += '\n{} # {} {} {}'.format(row[0], row[1], row[2], row[3])
 
     # Close the connection with the DB
     conn.close()
