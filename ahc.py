@@ -29,6 +29,8 @@ edit [-t tableName xmlFile|-h hostsPath] : (-t) extract and push data from XML f
 show [-t tableName|-h hostsPath] : (-t) display the content of the table (use * or all to show content for all tables in the database)
                                  : (-h) display the content of the hosts file
 sql : permit for the user to insert SQL query
+export : export the database from .db to .txt
+import : import the database from .txt to .db
 exit|quit
 
 EXAMPLE OF COMMANDS USES:
@@ -42,6 +44,9 @@ edit -h ./hosts.txt
 show -t wlan10
 show -h ./hosts.txt
 
+export
+import
+
 EXAMPLE OF COMMON SQL QUERY USES :
 
 SELECT * FROM wlan10 WHERE os!='Windows'
@@ -51,7 +56,6 @@ UPDATE wlan10 SET hostname = 'machine1', os = 'Linux', dist='Debian10' WHERE ip=
 INSERT OR REPLACE INTO wlan10 (ip,hostname,os,dist) VALUES ('192.168.10.1','machine1','no_os','no_dist')
 
 See also : https://sql.sh/cours
-
 
     """
     print(buffer)
@@ -154,17 +158,18 @@ def show_hosts(hosts_path):
                 pass
     
 
+# Program begin here
 if __name__ == "__main__":
     os.chdir(os.path.abspath(os.path.dirname(__file__))) # Redirect the path into ..../ansible_hosts_creator
     display_menu()
     while True:
         choice = '-1'
-        while not(choice.split()) or choice.split()[0] not in ['create','edit','exit','help','show','sql','quit']:
+        while not(choice.split()) or choice.split()[0] not in ['create','edit','exit','export','help','import','show','sql','quit']:
             try:
                 choice = input('(ahc)>')
             except Exception as e:
                 print(e)
-            if choice.split() and choice.split()[0] not in ['create','edit','exit','help','show','sql','quit']:
+            if choice.split() and choice.split()[0] not in ['create','edit','exit','export','help','import','show','sql','quit']:
                 print('{}: command not found'.format(choice.split()[0]))
 
         # exit|quit
@@ -219,5 +224,13 @@ if __name__ == "__main__":
                 print('{}: args error'.format(choice))
 
         # sql
-        elif choice == 'sql':
+        elif choice.split()[0] == 'sql':
             DB_functions.insert_sql_query()
+
+        # export
+        elif choice.split()[0] == 'export':
+            DB_functions.export_to_txt()
+
+        # import
+        elif choice.split()[0] == 'import':
+            DB_functions.import_from_txt()
