@@ -35,7 +35,7 @@ def create_table(table_name):
     except Exception as e:
         print(e)
 
-def insert(table_name, machines, cursor):
+def insert(table_name, machines, db_file='DB.db'):
     """
     Insert a list of machines into a table
     Ensure that machines = [(ip1, hostname1, os, dist),
@@ -46,7 +46,7 @@ def insert(table_name, machines, cursor):
     Parameters ip, hostname and os are strings
     """
     # Connect to the DB
-    conn = sqlite3.connect('DB.db')
+    conn = sqlite3.connect(db_file)
     cursor = conn.cursor()
 
     query = """INSERT INTO {} VALUES (?,?,?,?)""".format(table_name)
@@ -58,12 +58,12 @@ def insert(table_name, machines, cursor):
     # Close the connection with the DB
     conn.close()
 
-def insert_sql_query():
+def insert_sql_query(db_file='DB.db'):
     """
     Allow the user to insert SQL query
     """
     # Connect to the DB
-    conn = sqlite3.connect('DB.db')
+    conn = sqlite3.connect(db_file)
     cursor = conn.cursor()
 
     query = input('(sql)>')
@@ -82,7 +82,7 @@ def insert_sql_query():
     # Close the connection with the DB
     conn.close()
 
-def update(table_name, machines):
+def update(table_name, machines, db_file='DB.db'):
     """
     Insert a line into the DB if the line does not exist in here or update the line if it exists
     Ensure that machines = [(ip1, hostname1, os, dist),
@@ -93,7 +93,7 @@ def update(table_name, machines):
     Parameters ip, hostname, os and dist are strings
     """
     # Connect to the DB
-    conn = sqlite3.connect('DB.db')
+    conn = sqlite3.connect(db_file)
     cursor = conn.cursor()
 
     #query = """INSERT OR REPLACE INTO {} (ip,hostname,os,dist) VALUES (?,?,?,?)""".format(table_name)
@@ -117,9 +117,9 @@ def update(table_name, machines):
     # Close the connection with the DB
     conn.close()
 
-def select_all_from():
+def select_all_from(db_file='DB.db'):
     # Connect to the DB
-    conn = sqlite3.connect('DB.db')
+    conn = sqlite3.connect(db_file)
     cursor = conn.cursor()
 
     # Ask the user to pull ip from database by inserting SQL query
@@ -139,9 +139,9 @@ def select_all_from():
 
     return buffer
 
-def show_table(table_name):
+def show_table(table_name, db_file='DB.db'):
     # Connect to the DB
-    conn = sqlite3.connect('DB.db')
+    conn = sqlite3.connect(db_file)
     cursor = conn.cursor()
 
     if table_name in ['*','all']:
@@ -175,3 +175,67 @@ def show_table(table_name):
 
     # Close the connection with the DB
     conn.close()
+
+
+def export_to_txt(db_file='DB.db', txt_file='DB.txt'):
+    # Connect to the DB
+    conn = sqlite3.connect(db_file)
+    cursor = conn.cursor()
+
+    buffer = '' # to contains all database information
+
+    query = 'SELECT name FROM sqlite_master WHERE type = "table"'
+
+    try:
+        cursor.execute(query)
+        tables = [elmt[0] for elmt in list(cursor)]
+
+        for table_name in tables:
+            query = 'SELECT * FROM {}'.format(table_name)
+
+            cursor.execute(query)
+            buffer += table_name + '\n'
+            for row in cursor:
+                buffer += ' '.join([elmt for elmt in list(row)]) + '\n'
+    except Exception as e:
+        print('Error:', e)
+        conn.close()
+        return
+
+    # Close the connection with the DB
+    conn.close()
+
+    file = open(txt_file, 'w')
+    file.write(buffer)
+    file.close()
+
+def import_from_txt(db_file='DB.db', txt_file='DB.txt'):
+
+    # Read DB.txt
+    try:
+        file = open(txt_file, 'r')
+        buffer = file.readlines()
+        file.close()
+    except Exception as e:
+        print(e)
+        return
+
+    # Clear DB.db
+    try:
+        file = open(db_file, 'w')
+        file.write('')
+        file.close()
+    except Exception as e:
+        print(e)
+        return
+
+    # Write in DB.db
+
+    table_name = ''
+    for line in buffer:
+        data = line[:-1].split(' ') # data is a list with one element
+        if len(data) == 1:
+            table_name = data[0]
+            create_table(table_name)
+        elif len(data) == 4:
+            insert(table_name=table_name, machines=[tuple(data)])
